@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.dollarsbank.controller.DollarsBankController;
-import com.dollarsbank.dao.CustomerDaoSQL;
 import com.dollarsbank.model.Customer;
 import com.dollarsbank.utility.BankMenus;
 
@@ -15,22 +14,12 @@ public class DollarsBankApplication {
 		List<Customer> users = new ArrayList<Customer>();
 		BankMenus menus = new BankMenus();
 		DollarsBankController controller = new DollarsBankController();
-		CustomerDaoSQL cdao = new CustomerDaoSQL();
 
 		Scanner s = new Scanner(System.in);
 
 		boolean b = true;
 		while (b) {
-			
 
-			users = cdao.getAllCustomers();
-			for (int j = 0; j < users.size(); j++) {
-
-				Customer printCust = users.get(j);
-				String str = printCust.toString();
-				System.out.println(j + 1 + " | " + str + "\n");
-
-			}
 			menus.welcomeMenu();
 			int choice = s.nextInt();
 			s.nextLine();
@@ -55,15 +44,23 @@ public class DollarsBankApplication {
 				newCust.setPhoneNumber(num);
 
 				System.out.println("User Id: \u001B[36m");
+				//s.nextLine();
+				//int id = Integer.parseInt(s.nextLine());
 				int id = s.nextInt();
 				s.nextLine();
 				System.out.println("\u001B[0m");
 				newCust.setCustId(id);
 
+//				System.out.println("Password: \u001B[36m");
+//				String password = s.nextLine();
+//				System.out.println("\u001B[0m");
+//
+//				newCust.setPassword(password);
 				System.out.println("Enter Pin: \u001B[36m");
 				int pin = s.nextInt();
 				s.nextLine();
 				System.out.println("\u001B[0m");
+
 				newCust.setPin(pin);
 
 				System.out.println("Initial Deposit Amount: \u001B[36m");
@@ -71,139 +68,136 @@ public class DollarsBankApplication {
 				s.nextLine();
 				System.out.println("\u001B[0m");
 				newCust.setMoney(init);
+				newCust.transactions.add("Initial Deposit: $" + init + " Total: $\u001B[0m" + newCust.getMoney());
 
-				cdao.addCustomer(newCust);
+				users.add(newCust);
 				
-				String trans = "Initial Deposit: $" + init + " Total: $\u001B[0m" + newCust.getMoney();
-				cdao.updateTransactions(newCust, trans);
-			
 				newCust.toString();
-				users = cdao.getAllCustomers();
 
 				break;
 
 			}
 			case 2: { // login
-				//users = cdao.getAllCustomers();
-
+//				Customer cust = users.get(0);
+//				System.out.println(cust);
+//				cust.toString();
+				
 				if (users.isEmpty()) {
 					System.out.println("No users in the database, please create a new user!");
 					break;
 				}
 
 				menus.loginMenu();
-
+				
 				System.out.println("User ID: \u001B[36m");
-				// int id = Integer.parseInt(s.nextLine());
+				//int id = Integer.parseInt(s.nextLine());
 				int id = s.nextInt();
 				s.nextLine();
 				System.out.println("\u001B[0m");
-				
-				System.out.println(id);
+
+//				System.out.println("Password:\u001B[36m ");
+//				String pass = s.nextLine();
+//				//s.nextLine();
+//				System.out.println("\u001B[0m");
 
 				System.out.println("Pin:\u001B[36m ");
 				int pass = s.nextInt();
 				s.nextLine();
 				System.out.println("\u001B[0m");
+				
+				for (int i = 0; i < users.size(); i++) {
+					Customer user = users.get(i);
+					if (user.custId == id) {
 
-				// for (int i = 0; i < users.size(); i++) {
-				// Customer user = users.get(i);
-				Customer user = cdao.getCustomerByLogin(id);
+						if (user.pin == pass) {
 
-				if (user.custId == id) {
-					if (user.pin == pass) {
+							int loggedId = i;
+							boolean b2 = true;
+							while (b2) {
+								menus.mainMenu();
+								choice = s.nextInt();
+								switch (choice) {
+								case 1: { // deposit
+									System.out.println("How much would you like to deposit? \n");
+									double amt = s.nextInt();
+									s.nextLine();
+									controller.deposit(user, amt);
+									System.out.println("Deposited " + amt + ", new total is : " + user.getMoney());
+									
+									user.transactions.add("Deposit: $" + amt + " Total: $" + user.getMoney());
+									
 
-						// int loggedId = i;
-						boolean b2 = true;
-						while (b2) {
-							users = cdao.getAllCustomers();
-							menus.mainMenu();
-							choice = s.nextInt();
-							switch (choice) {
-							case 1: { // deposit
-								System.out.println("How much would you like to deposit? \n");
-								double amt = s.nextInt();
-								s.nextLine();
-								controller.deposit(user, amt);
-								System.out.println("Deposited " + amt + ", new total is : " + user.getMoney());
+									break;
+								}
+								case 2: {// withdraw
+									System.out.println("How much would you like to withdraw? \n");
+									int amt = s.nextInt();
+									s.nextLine();
+									controller.withdrawl(user, amt);
 
-								String trans = "Deposit: $" + amt + " Total: $" + user.getMoney();
-								cdao.updateTransactions(user, trans);
-								break;
-							}
-							case 2: {// withdraw
-								System.out.println("How much would you like to withdraw? \n");
-								int amt = s.nextInt();
-								s.nextLine();
-								controller.withdrawl(user, amt);
 
-								break;
-							}
-							case 3: { // transfer
-								if (users.size() <= 1) {
-									System.out.println("No other users to transfer to!");
+									break;
+								}
+								case 3: { // transfer
+									if (users.size() <= 1) {
+										System.out.println("No other users to transfer to!");
 
-								} else {
-									System.out.println("Please choose who you want to transfer to: ");
-									for (int j = 0; j < users.size(); j++) {
+									} else {
+										System.out.println("Please choose who you want to transfer to: ");
+										for (int j = 0; j < users.size(); j++) {
 
-										Customer printCust = users.get(j);
-										String str = printCust.toString();
-										System.out.println(j + 1 + " | " + str + "\n");
+											Customer printCust = users.get(j);
+											String str = printCust.toString();
+											System.out.println(j + 1 + " | " + str + "\n");
+											
+
+										}
+										int tchoice = s.nextInt() - 1;
+										s.nextLine();
+										
+										Customer recipient = users.get(tchoice);
+										
+										System.out.println("How much would you like to send?");
+										double send = s.nextDouble();
+										
+										controller.transfer(user, recipient, send);
+										user.transactions.add("Sent: $" + send + " To user: " + recipient.getName()+ " New total: $" + user.getMoney());
+										recipient.transactions.add("Recieved: $" + send + " From user: " + user.getName() + "New total: $" + recipient.getMoney());
+										
 
 									}
-									int tchoice = s.nextInt();
-									s.nextLine();
 
-									//Customer recipient = users.get(tchoice);
-									Customer recipient = cdao.getCustomerByLogin(tchoice);
+									break;
+								}
+								case 4: { // view 5
+									controller.recentTransactions(user);
+									//user.getTransactions();
+									break;
+								}
+								case 5: { // display info
+									System.out.println(user);
 
-
-									System.out.println("How much would you like to send?");
-									double send = s.nextDouble();
-
-									controller.transfer(user, recipient, send);
-
-									String trans = "Sent: $" + send + " To user: " + recipient.getName() + " New total: $" + user.getMoney();
-									cdao.updateTransactions(user, trans);
-									System.out.println(trans);
-
-									String trans2 = "Recieved: $" + send + " From user: " + user.getName() + " New total: $" + recipient.getMoney();
-									cdao.updateTransactions(recipient, trans2);
-									System.out.println(trans2);
-
+									break;
+								}
+								case 6: { // sign out
+									b2 = false;
+									break;
 								}
 
-								break;
-							}
-							case 4: { // view 5
-								controller.recentTransactions(user);
-								// user.getTransactions();
-								break;
-							}
-							case 5: { // display info
-								System.out.println(user);
-
-								break;
-							}
-							case 6: { // sign out
-								b2 = false;
-								break;
+								}
 							}
 
-							}
+						}else {
+							System.out.println("\u001B[31mIncorrect Username or Password, please try again!\u001B[0m");
 						}
+						
 
-					} else {
-						System.out.println("\u001B[31mIncorrect Username or Password, please try again!\u001B[0m");
-					}
-
+					} 
 				}
-			}
 
 				break;
-
-			// }
+				
+			}
 			case 3: { // exit
 				b = false;
 				break;
@@ -216,6 +210,3 @@ public class DollarsBankApplication {
 	}
 
 }
-
-
-

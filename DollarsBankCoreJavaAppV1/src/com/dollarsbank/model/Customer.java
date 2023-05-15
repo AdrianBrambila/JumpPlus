@@ -5,28 +5,15 @@ import java.util.List;
 
 public class Customer {
 
-	public int id;
 	public int custId;
 	public String name;
 	public String address;
 	public String phoneNumber;
+	//public String password;
 	public int pin;
 	public double money;
+	public 	List<String> transactions = new ArrayList<String>();
 
-	
-
-	public Customer() {
-		super();
-	}
-
-
-
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	
 	public int getCustId() {
 		return custId;
@@ -52,23 +39,37 @@ public class Customer {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	public int getPin() {
-			return pin;
+public int getPin() {
+		return pin;
 	}
 	public void setPin(int pin) {
 		this.pin = pin;
 	}
-
+	//	public String getPassword() {
+//		return password;
+//	}
+//	public void setPassword(String password) {
+//		this.password = password;
+//	}
 	public double getMoney() {
 		return money;
 	}
 	public void setMoney(double money) {
 		this.money = money;
 	}
-
+	public void getTransactions() {
+		for(String s: transactions) {
+			System.out.println(s);
+		}
+		//return 0;
+	}
+	public void setTransactions(List<String> transactions) {
+		this.transactions = transactions;
+	}
 	@Override
 	public String toString() {
-		return "Customer [custId=" + custId + ", name=" + name + ", phoneNumber=" + phoneNumber;
+		return "Customer [custId=" + custId + ", name=" + name + ", address=" + address + ", phoneNumber=" + phoneNumber
+				+ ", money=" + money + "]";
 	}
 
 	

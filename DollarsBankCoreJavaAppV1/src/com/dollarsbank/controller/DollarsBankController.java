@@ -1,15 +1,8 @@
 package com.dollarsbank.controller;
 
-import java.util.List;
-
-import com.dollarsbank.dao.CustomerDaoSQL;
 import com.dollarsbank.model.Customer;
 
 public class DollarsBankController {
-	
-	CustomerDaoSQL cdao = new CustomerDaoSQL();
-
-
 
 	public void deposit(Customer cust, double amount) {
 
@@ -18,8 +11,7 @@ public class DollarsBankController {
 		double after = before + amount;
 
 		cust.setMoney(after);
-		
-		cdao.updateBalance(cust);
+
 	}
 
 	public void withdrawl(Customer cust, double amount) {
@@ -33,10 +25,8 @@ public class DollarsBankController {
 			cust.setMoney(after);
 			// double total = cust.getMoney() - amount;
 			System.out.println("Withdrew " + amount + ", new total is: " + cust.getMoney());
-			//cust.transactions.add();
-			String trans = "Withdrawl: $" + amount + " Total: $" + cust.getMoney();
-			cdao.updateBalance(cust);
-			cdao.updateTransactions(cust, trans);
+			cust.transactions.add("Withdrawl: $" + amount + " Total: $" + cust.getMoney());
+
 
 		}
 
@@ -50,28 +40,21 @@ public class DollarsBankController {
 		} else {
 			double c1Money = c1.getMoney() - amount;
 			c1.setMoney(c1Money);
-			cdao.updateBalance(c1);
-
 
 			double c2Money = c2.getMoney() + amount;
 			c2.setMoney(c2Money);
-			cdao.updateBalance(c2);
-
-			
 		}
 	}
 
 	public void recentTransactions(Customer cust) {
-		List<String> userTransactions = cdao.getTransactionsByUser(cust);
-		
-		if (userTransactions.size() > 5) {
+		if (cust.transactions.size() > 5) {
 
-			for (int i = userTransactions.size() - 5; i < userTransactions.size(); i++) {
-				System.out.println(userTransactions.get(i));
+			for (int i = cust.transactions.size() - 5; i < cust.transactions.size(); i++) {
+				System.out.println(cust.transactions.get(i));
 			}
 
 		} else {
-			for (String s : userTransactions) {
+			for (String s : cust.transactions) {
 				System.out.println(s);
 			}
 		}
